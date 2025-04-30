@@ -36,13 +36,13 @@ body {
 }
 
 .grid-button {
-  width: 100%; /* Make the button take up 100% of the cell’s width */
-  height: 0;
-  padding-bottom: 100%; /* Ensures square aspect ratio */
+  /* Explicitly set width and height, remove padding-bottom hack */
+  width: 22px; /* Smaller fixed width */
+  height: 22px; /* Smaller fixed height */
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 0.65rem;
+  font-size: 0.6rem; /* Slightly smaller font */
   font-weight: bold;
   cursor: pointer;
   border: 2px outset buttonface;
