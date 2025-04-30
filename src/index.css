@@ -24,10 +24,10 @@ body {
 
 .grid-container {
   display: grid;
-  /* Set explicit column width to match button width */
-  grid-template-columns: repeat(10, 21px); /* Adjusted for 3px gap */
+  /* Reverted to auto columns for intrinsic sizing */
+  grid-template-columns: repeat(10, auto);
   justify-content: center;
-  gap: 3px; /* Increased gap */
+  gap: 5px; /* Increased gap significantly */
   /* Removed width: 100%; to let the grid size intrinsically */
   max-width: 240px; /* Still constrained */
   margin-top: 15px;
@@ -37,15 +37,15 @@ body {
 
 .grid-button {
   /* Explicitly set width and height, remove padding-bottom hack */
-  width: 21px; /* Adjusted for 3px gap */
-  height: 21px; /* Adjusted for 3px gap */
+  width: 19px; /* Adjusted for 5px gap */
+  height: 19px; /* Adjusted for 5px gap */
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 0.6rem; /* Reverted to smaller font */
-  font-weight: bold;
+  font-size: 0.6rem;
+  /* font-weight: bold; */ /* Temporarily removed bold */
   cursor: pointer;
-  border: 2px outset buttonface; /* Restored border */
+  border: 2px outset buttonface;
   background-color: buttonface;
   box-sizing: border-box;
   -webkit-user-select: none;
