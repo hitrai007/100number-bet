@@ -75,3 +75,17 @@ body {
   font-weight: bold;
   text-align: center;
 }
+
+.place-bet-button {
+  width: 100%; /* Make button full width */
+  margin-top: 15px; /* Add space above */
+  padding: 5px 0; /* Add some vertical padding */
+  font-weight: bold; /* Make text bold */
+}
+
+/* Style for disabled button */
+.place-bet-button:disabled {
+  /* Styles from 98.css might handle this, but we can add specific ones if needed */
+  /* e.g., color: grey; */
+  /* e.g., cursor: not-allowed; */
+}

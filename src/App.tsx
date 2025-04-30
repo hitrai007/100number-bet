@@ -22,6 +22,18 @@ function App() {
     });
   };
 
+  // Calculate bet details
+  const numberOfBets = selectedNumbers.length;
+  const totalBetAmount = (numberOfBets * 0.1).toFixed(2);
+  const buttonText = `Place Bet: $${totalBetAmount} for ${numberOfBets} ${numberOfBets === 1 ? 'number' : 'numbers'}`;
+
+  const handlePlaceBet = () => {
+    // Placeholder for actual bet placing logic
+    console.log(`Placing bet for numbers: ${selectedNumbers.join(', ')}`);
+    console.log(`Total amount: $${totalBetAmount}`);
+    // Consider adding loading state and calling contract interaction here
+  };
+
   const numbers = Array.from({ length: 100 }, (_, i) => i + 1);
 
   return (
@@ -44,6 +56,16 @@ function App() {
         {/* Display the count or the list of selected numbers */}
         Numbers Selected: {selectedNumbers.length > 0 ? selectedNumbers.join(", ") : "None"}
       </div>
+
+      {/* Place Bet Button */}
+      <button
+        className="place-bet-button"
+        onClick={handlePlaceBet}
+        disabled={numberOfBets === 0}
+        aria-label={buttonText} // Accessibility
+      >
+        {buttonText}
+      </button>
     </div>
   );
 }
