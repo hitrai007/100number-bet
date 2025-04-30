@@ -10,6 +10,9 @@ function App() {
 
   const handleNumberClick = (number: number) => {
     setSelectedNumber(number);
+    // Potentially add logic here to interact with the primary button if needed
+    // e.g., enable it and set its text
+    // sdk.actions.setPrimaryButton({ text: `Select ${number}`, enabled: true });
   };
 
   const numbers = Array.from({ length: 100 }, (_, i) => i + 1);
@@ -37,5 +40,3 @@ function App() {
 }
 
 export default App;
-
- 

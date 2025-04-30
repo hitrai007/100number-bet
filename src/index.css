@@ -7,7 +7,6 @@ body {
   font-family: inherit;
   margin: 0;
   padding: 1rem; /* Add some padding */
-  // Added flex properties for centering
   display: flex; /* Center content vertically */
   flex-direction: column; /* Stack elements vertically */
   align-items: center; /* Center content horizontally */
@@ -15,8 +14,6 @@ body {
 }
 
 /* Remove default @media query */
-
-// Added new styles below
 
 .app-container {
   display: flex;
