@@ -6,13 +6,13 @@ body {
   /* Use system font provided by 98.css */
   font-family: inherit;
   margin: 0;
-  // Reduced body padding to allow app-container to control spacing
+  /* Reduced body padding to allow app-container to control spacing */
   padding: 0.5rem; /* Smaller body padding */
   display: flex;
   flex-direction: column;
   align-items: center;
   min-height: 95vh;
-  // Ensure box-sizing for the body as well
+  /* Ensure box-sizing for the body as well */
   box-sizing: border-box;
 }
 
@@ -23,9 +23,9 @@ body {
   flex-direction: column;
   align-items: center;
   width: 100%;
-  // Keep a reasonable max-width but add padding
+  /* Keep a reasonable max-width but add padding */
   max-width: 380px;
-  // Add padding for space around the edges
+  /* Add padding for space around the edges */
   padding: 15px; /* Added padding inside the container */
   box-sizing: border-box;
 }
@@ -35,7 +35,7 @@ body {
   grid-template-columns: repeat(10, 1fr);
   gap: 2px;
   width: 100%;
-  // Significantly reduced max-width to fit 10 small buttons + gaps
+  /* Significantly reduced max-width to fit 10 small buttons + gaps */
   max-width: 260px; /* Reduced max-width substantially */
   margin-top: 15px;
   margin-bottom: 15px;
@@ -43,7 +43,7 @@ body {
 }
 
 .grid-button {
-  // Removed explicit width/height, reinstated aspect-ratio
+  /* Removed explicit width/height, reinstated aspect-ratio */
   aspect-ratio: 1 / 1; /* Make buttons square */
   padding: 0; /* Keep padding at 0 */
   display: flex;
@@ -55,6 +55,8 @@ body {
   border: 2px outset buttonface;
   background-color: buttonface;
   box-sizing: border-box;
+  /* Added -webkit- prefix for compatibility */
+  -webkit-user-select: none; /* Safari */
   user-select: none;
   flex-shrink: 0;
 }
@@ -70,7 +72,7 @@ body {
 }
 
 .selected-number-display {
-  // Keep margin-top for spacing, but adjust if needed
+  /* Keep margin-top for spacing, but adjust if needed */
   margin-top: 15px;
   font-weight: bold;
   text-align: center;
