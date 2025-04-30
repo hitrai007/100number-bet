@@ -34,30 +34,33 @@ body {
   display: grid;
   grid-template-columns: repeat(10, 1fr);
   gap: 2px;
-  // Explicitly limit grid width further
   width: 100%;
-  max-width: 320px; /* Further constrain grid width */
-  // Increased margin for more space above/below
-  margin-top: 15px; /* Added margin above grid */
-  margin-bottom: 15px; /* Increased margin below grid */
+  // Further reduced max-width
+  max-width: 300px; /* Reduced max-width again */
+  margin-top: 15px;
+  margin-bottom: 15px;
   box-sizing: border-box;
 }
 
 .grid-button {
-  // Reduced padding further
-  padding: 1px; /* Minimal padding */
-  aspect-ratio: 1 / 1;
+  // Explicitly set width/height instead of relying on padding/aspect-ratio
+  width: 28px; /* Explicit width */
+  height: 28px; /* Explicit height */
+  // Remove padding as width/height are set
+  padding: 0; /* No padding */
   display: flex;
   align-items: center;
   justify-content: center;
-  // Reduced font-size significantly
-  font-size: 0.65rem; /* Smaller font */
+  // Use !important for diagnosis
+  font-size: 0.65rem !important; /* Smaller font, force apply */
   font-weight: bold;
   cursor: pointer;
   border: 2px outset buttonface;
   background-color: buttonface;
   box-sizing: border-box;
   user-select: none;
+  // Ensure button doesn't shrink below content
+  flex-shrink: 0;
 }
 
 .grid-button:active {
