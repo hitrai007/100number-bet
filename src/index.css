@@ -1,0 +1,12 @@
+/* Remove default :root styles */
+
+body {
+  /* Default Win98 background color */
+  background-color: rgb(192, 192, 192);
+  /* Use system font provided by 98.css */
+  font-family: inherit; 
+  margin: 0;
+  padding: 1rem; /* Add some padding */
+}
+
+/* Remove default @media query */
