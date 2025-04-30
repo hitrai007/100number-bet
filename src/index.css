@@ -28,18 +28,23 @@ body {
   /* Add padding for space around the edges */
   padding: 15px; /* Added padding inside the container */
   box-sizing: border-box;
+  /* Diagnostic border for app container */
+  border: 1px dashed green;
 }
 
 .grid-container {
   display: grid;
   grid-template-columns: repeat(10, 1fr);
   gap: 2px;
-  width: 100%;
-  /* Drastically reduced max-width */
-  max-width: 200px; /* Much smaller max-width */
+  /* Try explicit width */
+  width: 200px; /* Explicit width */
+  /* Remove max-width for now */
+  /* max-width: 200px; */
   margin-top: 15px;
   margin-bottom: 15px;
   box-sizing: border-box;
+  /* Diagnostic border for grid container */
+  border: 2px solid red;
 }
 
 .grid-button {
@@ -59,6 +64,8 @@ body {
   -webkit-user-select: none; /* Safari */
   user-select: none;
   flex-shrink: 0;
+   /* Diagnostic border for buttons */
+  border: 1px solid blue;
 }
 
 .grid-button:active {
