@@ -1,16 +1,38 @@
 import { sdk } from "@farcaster/frame-sdk";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 
 function App() {
+  const [selectedNumber, setSelectedNumber] = useState<number | null>(null);
+
   useEffect(() => {
     sdk.actions.ready();
   }, []);
 
+  const handleNumberClick = (number: number) => {
+    setSelectedNumber(number);
+  };
+
+  const numbers = Array.from({ length: 100 }, (_, i) => i + 1);
+
   return (
-    <>
-      <label htmlFor="number-input">Choose a number from 1-100</label>
-      <input id="number-input" type="number" min="1" max="100" />
-    </>
+    <div className="app-container">
+      <div className="grid-container">
+        {numbers.map((number) => (
+          <button
+            key={number}
+            className={`grid-button ${
+              selectedNumber === number ? "selected" : ""
+            }`}
+            onClick={() => handleNumberClick(number)}
+          >
+            {number}
+          </button>
+        ))}
+      </div>
+      <div className="selected-number-display">
+        Numbers Selected: {selectedNumber !== null ? selectedNumber : "None"}
+      </div>
+    </div>
   );
 }
 

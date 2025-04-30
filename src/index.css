@@ -4,9 +4,63 @@ body {
   /* Default Win98 background color */
   background-color: rgb(192, 192, 192);
   /* Use system font provided by 98.css */
-  font-family: inherit; 
+  font-family: inherit;
   margin: 0;
   padding: 1rem; /* Add some padding */
+  // Added flex properties for centering
+  display: flex; /* Center content vertically */
+  flex-direction: column; /* Stack elements vertically */
+  align-items: center; /* Center content horizontally */
+  min-height: 95vh; /* Ensure body takes up height for centering */
 }
 
 /* Remove default @media query */
+
+// Added new styles below
+
+.app-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%; /* Adjust as needed */
+  max-width: 400px; /* Limit max width for larger screens */
+}
+
+.grid-container {
+  display: grid;
+  grid-template-columns: repeat(10, 1fr); /* 10 columns */
+  gap: 4px; /* Space between buttons */
+  width: 100%;
+  margin-bottom: 1rem; /* Space below grid */
+  box-sizing: border-box; /* Include padding/border in element's total width/height */
+}
+
+.grid-button {
+  /* Inherit 98.css button styles if possible, or add custom ones */
+  padding: 5px;
+  aspect-ratio: 1 / 1; /* Make buttons square */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.8rem; /* Adjust font size */
+  cursor: pointer;
+  border: 2px outset buttonface; /* Basic 98.css style */
+  background-color: buttonface;
+  box-sizing: border-box; /* Include padding/border in element's total width/height */
+}
+
+.grid-button:active {
+   border-style: inset; /* Simulate button press */
+}
+
+.grid-button.selected {
+  background-color: navy; /* Highlight color */
+  color: white;
+  border-style: inset; /* Make it look pressed */
+}
+
+.selected-number-display {
+  margin-top: 1rem; /* Space above the display text */
+  font-weight: bold;
+  text-align: center; /* Center the text */
+}
