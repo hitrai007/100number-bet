@@ -42,7 +42,7 @@ body {
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 0.65rem; /* Slightly larger font */
+  font-size: 0.6rem; /* Reverted to smaller font */
   font-weight: bold;
   cursor: pointer;
   border: 2px outset buttonface;
