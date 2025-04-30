@@ -24,47 +24,50 @@ body {
 
 .grid-container {
   display: grid;
-  grid-template-columns: repeat(10, 19px); /* Explicit size */
+  /* Set explicit column width */
+  grid-template-columns: repeat(10, 19px);
   justify-content: center;
-  gap: 5px; /* Explicit gap */
+  gap: 5px; /* Keep 5px gap */
+  /* Removed width: 100%; to let the grid size intrinsically */
   max-width: 240px; /* Still constrained */
   margin-top: 15px;
   margin-bottom: 15px;
   box-sizing: border-box;
+  align-items: center;
+  justify-content: center;
 }
 
 .grid-button {
-  /* Override 98.css defaults */
+  /* Explicitly define styles to override 98.css defaults */
   width: 19px;
   height: 19px;
-  padding: 0;
-  margin: 0; /* Ensure no extra margin */
-  font-family: sans-serif; /* Override 98.css font */
-  font-size: 0.6rem;
-  font-weight: bold;
-  color: black;
-  background-color: buttonface; /* Use default 98.css bg */
-  border: 2px outset buttonface; /* Use default 98.css border */
-  box-shadow: none; /* Remove default 98.css shadow if present */
-  box-sizing: border-box;
+  min-width: unset; /* Override 98.css min-width */
+  padding: 0; /* Override 98.css padding */
+  margin: 0; /* Override potential margins */
   display: flex;
   align-items: center;
   justify-content: center;
+  font-size: 0.6rem;
+  font-weight: bold;
+  font-family: inherit; /* Try to inherit 98.css font, change if needed */
+  color: black; /* Ensure text is visible */
   cursor: pointer;
+  border: 2px outset buttonface; /* Keep our border */
+  background-color: buttonface; /* Keep our background */
+  box-sizing: border-box;
   -webkit-user-select: none;
   user-select: none;
   flex-shrink: 0;
-  line-height: 1; /* Prevent line-height issues */
 }
 
 .grid-button:active {
-   border-style: inset !important; /* Need important to override 98.css active */
+   border-style: inset;
 }
 
 .grid-button.selected {
-  background-color: navy !important; /* Need important for override */
-  color: white !important; /* Need important for override */
-  border-style: inset !important; /* Need important for override */
+  background-color: navy;
+  color: white;
+  border-style: inset;
 }
 
 .selected-number-display {
