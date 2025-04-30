@@ -35,31 +35,27 @@ body {
   grid-template-columns: repeat(10, 1fr);
   gap: 2px;
   width: 100%;
-  // Further reduced max-width
-  max-width: 300px; /* Reduced max-width again */
+  // Significantly reduced max-width to fit 10 small buttons + gaps
+  max-width: 260px; /* Reduced max-width substantially */
   margin-top: 15px;
   margin-bottom: 15px;
   box-sizing: border-box;
 }
 
 .grid-button {
-  // Explicitly set width/height instead of relying on padding/aspect-ratio
-  width: 28px; /* Explicit width */
-  height: 28px; /* Explicit height */
-  // Remove padding as width/height are set
-  padding: 0; /* No padding */
+  // Removed explicit width/height, reinstated aspect-ratio
+  aspect-ratio: 1 / 1; /* Make buttons square */
+  padding: 0; /* Keep padding at 0 */
   display: flex;
   align-items: center;
   justify-content: center;
-  // Use !important for diagnosis
-  font-size: 0.65rem !important; /* Smaller font, force apply */
+  font-size: 0.65rem !important; /* Keep small font */
   font-weight: bold;
   cursor: pointer;
   border: 2px outset buttonface;
   background-color: buttonface;
   box-sizing: border-box;
   user-select: none;
-  // Ensure button doesn't shrink below content
   flex-shrink: 0;
 }
 
