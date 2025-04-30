@@ -25,9 +25,9 @@ body {
 .grid-container {
   display: grid;
   /* Set explicit column width */
-  grid-template-columns: repeat(10, 21px); /* Increased size */
+  grid-template-columns: repeat(10, 22px); /* Max size for container */
   justify-content: center;
-  gap: 3px; /* Adjusted gap for new size */
+  gap: 2px; /* Min gap for max size */
   /* Removed width: 100%; to let the grid size intrinsically */
   max-width: 240px; /* Still constrained */
   margin-top: 15px;
@@ -39,8 +39,8 @@ body {
 
 .grid-button {
   /* Explicitly define styles to override 98.css defaults */
-  width: 21px; /* Increased size */
-  height: 21px !important; /* Increased size, force height */
+  width: 22px; /* Max size for container */
+  height: 22px !important; /* Max size, force height */
   min-width: unset; /* Override 98.css min-width */
   padding: 0; /* Override 98.css padding */
   margin: 0; /* Override potential margins */
