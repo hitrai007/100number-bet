@@ -1,75 +1,56 @@
 /* Remove default :root styles */
 
 body {
-  /* Default Win98 background color */
   background-color: rgb(192, 192, 192);
-  /* Use system font provided by 98.css */
   font-family: inherit;
   margin: 0;
-  /* Reduced body padding to allow app-container to control spacing */
-  padding: 0.5rem; /* Smaller body padding */
+  padding: 0.5rem;
   display: flex;
   flex-direction: column;
   align-items: center;
   min-height: 95vh;
-  /* Ensure box-sizing for the body as well */
   box-sizing: border-box;
 }
-
-/* Remove default @media query */
 
 .app-container {
   display: flex;
   flex-direction: column;
   align-items: center;
   width: 100%;
-  /* Keep a reasonable max-width but add padding */
-  max-width: 380px;
-  /* Add padding for space around the edges */
-  padding: 15px; /* Added padding inside the container */
+  max-width: 240px; /* Adjusted to fit better */
+  padding: 15px;
   box-sizing: border-box;
-  /* Removed diagnostic border */
-  /* border: 1px dashed green; */
 }
 
 .grid-container {
   display: grid;
-  /* Adjust grid columns to fit explicit button size */
-  grid-template-columns: repeat(10, auto); /* Change fr units to auto */
-  justify-content: center; /* Center the grid items if container is wider */
+  /* Adjust grid columns to evenly distribute space */
+  grid-template-columns: repeat(10, 1fr); /* Use 1fr to ensure equal distribution */
+  justify-content: center;
   gap: 2px;
-  /* Keep width constrained */
-  width: auto; /* Let grid size based on content */
-  max-width: 240px; /* Adjust max-width based on button size + gaps */
+  width: 100%; /* Use full container width */
+  max-width: 240px; /* Constrained to the size of the app container */
   margin-top: 15px;
   margin-bottom: 15px;
   box-sizing: border-box;
-  /* Removed diagnostic border */
-  /* border: 2px solid red; */
 }
 
 .grid-button {
-  /* Remove aspect-ratio */
-  /* aspect-ratio: 1 / 1; */
-  /* Set explicit small width and height */
-  width: 20px;  /* Explicit small width */
-  height: 20px; /* Explicit small height */
-  padding: 0; /* Keep padding at 0 */
+  width: 100%; /* Make the button take up 100% of the cell’s width */
+  height: 0;
+  padding-bottom: 100%; /* Ensures square aspect ratio */
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 0.65rem; /* Keep small font */
+  font-size: 0.65rem;
   font-weight: bold;
   cursor: pointer;
-  /* Keep original border style */
   border: 2px outset buttonface;
   background-color: buttonface;
   box-sizing: border-box;
-  -webkit-user-select: none; /* Safari */
+  -webkit-user-select: none;
   user-select: none;
   flex-shrink: 0;
-   /* Removed diagnostic border */
-  /* border: 1px solid blue; */
 }
 
 .grid-button:active {
@@ -83,7 +64,6 @@ body {
 }
 
 .selected-number-display {
-  /* Keep margin-top for spacing, but adjust if needed */
   margin-top: 15px;
   font-weight: bold;
   text-align: center;
