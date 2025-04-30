@@ -25,7 +25,7 @@ body {
 .grid-container {
   display: grid;
   /* Set explicit column width to match button width */
-  grid-template-columns: repeat(10, 24px);
+  grid-template-columns: repeat(10, 22px); /* Reverted to fit 240px container */
   justify-content: center;
   gap: 2px;
   /* Removed width: 100%; to let the grid size intrinsically */
@@ -37,8 +37,8 @@ body {
 
 .grid-button {
   /* Explicitly set width and height, remove padding-bottom hack */
-  width: 24px; /* Slightly larger fixed width */
-  height: 24px; /* Slightly larger fixed height */
+  width: 22px; /* Reverted to fit 240px container */
+  height: 22px; /* Reverted to fit 240px container */
   display: flex;
   align-items: center;
   justify-content: center;
