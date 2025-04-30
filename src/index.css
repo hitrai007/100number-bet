@@ -6,11 +6,14 @@ body {
   /* Use system font provided by 98.css */
   font-family: inherit;
   margin: 0;
-  padding: 1rem; /* Add some padding */
-  display: flex; /* Center content vertically */
-  flex-direction: column; /* Stack elements vertically */
-  align-items: center; /* Center content horizontally */
-  min-height: 95vh; /* Ensure body takes up height for centering */
+  // Reduced body padding to allow app-container to control spacing
+  padding: 0.5rem; /* Smaller body padding */
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  min-height: 95vh;
+  // Ensure box-sizing for the body as well
+  box-sizing: border-box;
 }
 
 /* Remove default @media query */
@@ -19,47 +22,57 @@ body {
   display: flex;
   flex-direction: column;
   align-items: center;
-  width: 100%; /* Adjust as needed */
-  max-width: 380px; /* Reduce max-width slightly */
+  width: 100%;
+  // Keep a reasonable max-width but add padding
+  max-width: 380px;
+  // Add padding for space around the edges
+  padding: 15px; /* Added padding inside the container */
+  box-sizing: border-box;
 }
 
 .grid-container {
   display: grid;
-  grid-template-columns: repeat(10, 1fr); /* 10 columns */
-  gap: 2px; /* Smaller gap */
+  grid-template-columns: repeat(10, 1fr);
+  gap: 2px;
+  // Explicitly limit grid width further
   width: 100%;
-  margin-bottom: 1rem; /* Space below grid */
-  box-sizing: border-box; /* Include padding/border in element's total width/height */
+  max-width: 320px; /* Further constrain grid width */
+  // Increased margin for more space above/below
+  margin-top: 15px; /* Added margin above grid */
+  margin-bottom: 15px; /* Increased margin below grid */
+  box-sizing: border-box;
 }
 
 .grid-button {
-  /* Inherit 98.css button styles if possible, or add custom ones */
-  padding: 2px; /* Smaller padding */
-  aspect-ratio: 1 / 1; /* Make buttons square */
+  // Reduced padding further
+  padding: 1px; /* Minimal padding */
+  aspect-ratio: 1 / 1;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 0.8rem; /* Adjust font size */
-  font-weight: bold; /* Bolder text */
+  // Reduced font-size significantly
+  font-size: 0.65rem; /* Smaller font */
+  font-weight: bold;
   cursor: pointer;
-  border: 2px outset buttonface; /* Basic 98.css style */
+  border: 2px outset buttonface;
   background-color: buttonface;
-  box-sizing: border-box; /* Include padding/border in element's total width/height */
-  user-select: none; /* Prevent text selection */
+  box-sizing: border-box;
+  user-select: none;
 }
 
 .grid-button:active {
-   border-style: inset; /* Simulate button press */
+   border-style: inset;
 }
 
 .grid-button.selected {
-  background-color: navy; /* Highlight color */
+  background-color: navy;
   color: white;
-  border-style: inset; /* Make it look pressed */
+  border-style: inset;
 }
 
 .selected-number-display {
-  margin-top: 1rem; /* Space above the display text */
+  // Keep margin-top for spacing, but adjust if needed
+  margin-top: 15px;
   font-weight: bold;
-  text-align: center; /* Center the text */
+  text-align: center;
 }
