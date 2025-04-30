@@ -25,7 +25,7 @@ body {
 .grid-container {
   display: grid;
   /* Adjust grid columns to evenly distribute space */
-  grid-template-columns: repeat(10, 1fr); /* Use 1fr to ensure equal distribution */
+  grid-template-columns: repeat(10, auto); /* Use auto to size columns based on content */
   justify-content: center;
   gap: 2px;
   width: 100%; /* Use full container width */
