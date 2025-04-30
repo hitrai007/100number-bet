@@ -25,9 +25,9 @@ body {
 .grid-container {
   display: grid;
   /* Set explicit column width */
-  grid-template-columns: repeat(10, 19px);
+  grid-template-columns: repeat(10, 19px) !important;
   justify-content: center;
-  gap: 5px; /* Keep 5px gap */
+  gap: 5px !important; /* Keep 5px gap */
   /* Removed width: 100%; to let the grid size intrinsically */
   max-width: 240px; /* Still constrained */
   margin-top: 15px;
@@ -39,17 +39,19 @@ body {
 
 .grid-button {
   /* Explicitly set width and height, remove padding-bottom hack */
-  width: 19px; /* Adjusted for 5px gap */
-  height: 19px; /* Adjusted for 5px gap */
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 0.6rem;
-  font-weight: bold; /* Restored bold */
-  cursor: pointer;
-  border: 2px outset buttonface;
-  background-color: buttonface;
-  box-sizing: border-box;
+  width: 19px !important; /* Adjusted for 5px gap */
+  height: 19px !important; /* Adjusted for 5px gap */
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  font-size: 0.6rem !important;
+  font-weight: bold !important; /* Restored bold */
+  font-family: sans-serif !important; /* Force font */
+  color: black !important; /* Force color */
+  cursor: pointer !important;
+  border: 2px outset buttonface !important;
+  background-color: buttonface !important;
+  box-sizing: border-box !important;
   -webkit-user-select: none;
   user-select: none;
   flex-shrink: 0;
