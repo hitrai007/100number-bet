@@ -45,7 +45,7 @@ body {
   font-size: 0.6rem; /* Reverted to smaller font */
   font-weight: bold;
   cursor: pointer;
-  border: 2px outset buttonface;
+  /* border: 2px outset buttonface; */ /* Temporarily remove border */
   background-color: buttonface;
   box-sizing: border-box;
   -webkit-user-select: none;
