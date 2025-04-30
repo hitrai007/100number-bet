@@ -20,13 +20,13 @@ body {
   flex-direction: column;
   align-items: center;
   width: 100%; /* Adjust as needed */
-  max-width: 400px; /* Limit max width for larger screens */
+  max-width: 380px; /* Reduce max-width slightly */
 }
 
 .grid-container {
   display: grid;
   grid-template-columns: repeat(10, 1fr); /* 10 columns */
-  gap: 4px; /* Space between buttons */
+  gap: 2px; /* Smaller gap */
   width: 100%;
   margin-bottom: 1rem; /* Space below grid */
   box-sizing: border-box; /* Include padding/border in element's total width/height */
@@ -34,16 +34,18 @@ body {
 
 .grid-button {
   /* Inherit 98.css button styles if possible, or add custom ones */
-  padding: 5px;
+  padding: 2px; /* Smaller padding */
   aspect-ratio: 1 / 1; /* Make buttons square */
   display: flex;
   align-items: center;
   justify-content: center;
   font-size: 0.8rem; /* Adjust font size */
+  font-weight: bold; /* Bolder text */
   cursor: pointer;
   border: 2px outset buttonface; /* Basic 98.css style */
   background-color: buttonface;
   box-sizing: border-box; /* Include padding/border in element's total width/height */
+  user-select: none; /* Prevent text selection */
 }
 
 .grid-button:active {
