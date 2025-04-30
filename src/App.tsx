@@ -2,17 +2,24 @@ import { sdk } from "@farcaster/frame-sdk";
 import { useEffect, useState } from "react";
 
 function App() {
-  const [selectedNumber, setSelectedNumber] = useState<number | null>(null);
+  // State to hold multiple selected numbers
+  const [selectedNumbers, setSelectedNumbers] = useState<number[]>([]);
 
   useEffect(() => {
     sdk.actions.ready();
   }, []);
 
   const handleNumberClick = (number: number) => {
-    setSelectedNumber(number);
-    // Potentially add logic here to interact with the primary button if needed
-    // e.g., enable it and set its text
-    // sdk.actions.setPrimaryButton({ text: `Select ${number}`, enabled: true });
+    setSelectedNumbers(prevSelectedNumbers => {
+      // Check if the number is already selected
+      if (prevSelectedNumbers.includes(number)) {
+        // If yes, remove it (deselect)
+        return prevSelectedNumbers.filter(n => n !== number);
+      } else {
+        // If no, add it (select)
+        return [...prevSelectedNumbers, number];
+      }
+    });
   };
 
   const numbers = Array.from({ length: 100 }, (_, i) => i + 1);
@@ -23,8 +30,9 @@ function App() {
         {numbers.map((number) => (
           <button
             key={number}
+            // Check if the current number is in the selectedNumbers array
             className={`grid-button ${
-              selectedNumber === number ? "selected" : ""
+              selectedNumbers.includes(number) ? "selected" : ""
             }`}
             onClick={() => handleNumberClick(number)}
           >
@@ -33,7 +41,8 @@ function App() {
         ))}
       </div>
       <div className="selected-number-display">
-        Numbers Selected: {selectedNumber !== null ? selectedNumber : "None"}
+        {/* Display the count or the list of selected numbers */}
+        Numbers Selected: {selectedNumbers.length > 0 ? selectedNumbers.join(", ") : "None"}
       </div>
     </div>
   );
