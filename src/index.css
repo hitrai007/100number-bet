@@ -24,12 +24,12 @@ body {
 
 .grid-container {
   display: grid;
-  /* Adjust grid columns to evenly distribute space */
-  grid-template-columns: repeat(10, auto); /* Use auto to size columns based on content */
+  /* Set explicit column width to match button width */
+  grid-template-columns: repeat(10, 22px);
   justify-content: center;
   gap: 2px;
-  width: 100%; /* Use full container width */
-  max-width: 240px; /* Constrained to the size of the app container */
+  /* Removed width: 100%; to let the grid size intrinsically */
+  max-width: 240px; /* Still constrained */
   margin-top: 15px;
   margin-bottom: 15px;
   box-sizing: border-box;
