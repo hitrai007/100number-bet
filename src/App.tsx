@@ -227,13 +227,6 @@ function App() {
     functionName: 'totalPool',
   });
 
-  const { data: allBetNumbersData } = useReadContract({
-    address: NUMBER_BET_ADDRESS,
-    abi: NUMBER_BET_ABI,
-    functionName: 'getAllBetNumbers',
-  });
-  const allBetNumbers: number[] = allBetNumbersData?.map(Number) ?? [];
-
   // --- New Timer/State Reads ---
   const { data: currentGameState, refetch: refetchGameState } = useReadContract({
     address: NUMBER_BET_ADDRESS,
