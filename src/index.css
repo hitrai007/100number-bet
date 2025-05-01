@@ -24,7 +24,7 @@ body {
   flex-direction: column;
   align-items: center;
   width: 100%;
-  max-width: 240px; /* Adjusted to fit better */
+  /* max-width: 240px; */ /* Removed fixed max-width */
   padding: 15px;
   box-sizing: border-box;
 }
