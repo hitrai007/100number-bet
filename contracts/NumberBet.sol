@@ -9,71 +9,114 @@ contract NumberBet is Ownable, ReentrancyGuard {
     IERC20 public immutable usdtToken;
     uint256 public constant BET_AMOUNT_PER_NUMBER = 100_000; // 0.1 USDT with 6 decimals
     uint8 public constant MAX_NUMBER = 100;
+    uint16 public constant PLATFORM_FEE_PERCENT_BPS = 100; // 100 BPS = 1% Platform Fee
 
-    // Mapping from number (1-100) to the address of the bettor
+    // Mappings
     mapping(uint8 => address) public betsPlaced;
-    // Mapping from user address to mapping of numbers they bet on (true if bet)
     mapping(address => mapping(uint8 => bool)) public userBets;
-    // Total USDT pooled in the contract
     uint256 public totalPool;
 
-    // --- Game Timer State ---
-    uint256 public gameEndTime; // Timestamp when the current betting round ends
-    uint256 public cooldownEndTime; // Timestamp when the cooldown period ends (and next game can start)
-    // We can add game state enum later (e.g., Betting, Cooldown, Ended)
+    // Game State Enum
+    enum GameState { Idle, Betting, Cooldown }
+    GameState public gameState;
+
+    // Game Timer State
+    uint256 public constant GAME_DURATION = 24 hours;
+    uint256 public constant COOLDOWN_DURATION = 1 hours;
+    uint256 public gameEndTime;
+    uint256 public cooldownEndTime;
+
+    // Last Game Info (Optional)
     // uint8 public lastWinningNumber;
-    // uint256 public lastPoolAmount;
+    // address public lastWinner;
+
 
     // --- Events ---
     event BetPlaced(address indexed player, uint8[] numbers, uint256 totalAmount);
     event GameDissolved(address indexed owner, uint256 totalAmount);
-    event GameEnded(uint256 endTime, uint256 poolAmount /*, uint8 winningNumber */);
     event NewGameStarted(uint256 startTime, uint256 endTime);
+    // Updated GameEnded event
+    event GameEnded(uint256 endTime, uint256 poolAmount, uint8 winningNumber, address indexed winner);
+    event PlatformFeePaid(address indexed recipient, uint256 amount);
+    event WinnerPaid(address indexed winner, uint256 amount); // Includes owner if no bettor won
 
+    // --- Errors ---
+    error BettingNotActive();
+    error BettingPeriodOver();
+    error GameAlreadyEnded();
+    error GameNotEndedYet();
+    error GameStillActive();
+    error CooldownNotOver();
+    error GameNotInBettingState();
+    error CannotDissolveActiveGame();
     error InvalidNumber(uint8 number);
     error NumberAlreadyBet(uint8 number);
     error AlreadyBetOnNumber(uint8 number);
     error NoNumbersToBet();
     error InsufficientAllowance();
     error TransferFailed();
+    error ZeroAddress();
+
 
     constructor(address _usdtTokenAddress) Ownable(msg.sender) {
+        if (_usdtTokenAddress == address(0)) revert ZeroAddress();
         usdtToken = IERC20(_usdtTokenAddress);
+        gameState = GameState.Idle; // Start in Idle state
+    }
+
+    // --- Game Lifecycle Functions ---
+
+    function startGame() external onlyOwner {
+        if (gameState == GameState.Betting) revert GameStillActive();
+        if (gameState == GameState.Cooldown && block.timestamp < cooldownEndTime) {
+            revert CooldownNotOver();
+        }
+
+        // Reset necessary state for a new game
+        // Clear bets from previous round (do this before starting new game)
+        // Note: This loop can be gas-intensive if many numbers were bet.
+        // Consider alternative designs for high-throughput games.
+        for (uint8 i = 1; i <= MAX_NUMBER; i++) {
+            address bettor = betsPlaced[i];
+            if (bettor != address(0)) {
+                userBets[bettor][i] = false; // Clear user's bet record for this number
+                betsPlaced[i] = address(0); // Clear the main bet record
+            }
+        }
+        // Reset pool (should be 0 already unless dissolve failed somehow)
+        totalPool = 0;
+
+        // Start new game
+        gameState = GameState.Betting;
+        gameEndTime = block.timestamp + GAME_DURATION;
+        cooldownEndTime = 0; // Reset cooldown end time
+
+        emit NewGameStarted(block.timestamp, gameEndTime);
     }
 
     function placeBet(uint8[] calldata _numbers) external nonReentrant {
+        if (gameState != GameState.Betting) revert BettingNotActive();
+        if (block.timestamp >= gameEndTime) revert BettingPeriodOver();
+
         uint256 len = _numbers.length;
-        if (len == 0) {
-            revert NoNumbersToBet();
-        }
+        if (len == 0) revert NoNumbersToBet();
 
         uint256 totalBetRequired = len * BET_AMOUNT_PER_NUMBER;
 
-        // Check allowance first
         if (usdtToken.allowance(msg.sender, address(this)) < totalBetRequired) {
             revert InsufficientAllowance();
         }
 
         for (uint256 i = 0; i < len; i++) {
             uint8 number = _numbers[i];
-            if (number == 0 || number > MAX_NUMBER) {
-                revert InvalidNumber(number);
-            }
-            if (betsPlaced[number] != address(0)) {
-                revert NumberAlreadyBet(number);
-            }
-            if (userBets[msg.sender][number]) {
-                revert AlreadyBetOnNumber(number); // User already bet on this number
-            }
+            if (number == 0 || number > MAX_NUMBER) revert InvalidNumber(number);
+            if (betsPlaced[number] != address(0)) revert NumberAlreadyBet(number);
+            if (userBets[msg.sender][number]) revert AlreadyBetOnNumber(number);
         }
 
-        // Transfer USDT
         bool success = usdtToken.transferFrom(msg.sender, address(this), totalBetRequired);
-        if (!success) {
-            revert TransferFailed();
-        }
+        if (!success) revert TransferFailed();
 
-        // Update state after successful transfer
         for (uint256 i = 0; i < len; i++) {
              uint8 number = _numbers[i];
             betsPlaced[number] = msg.sender;
@@ -85,56 +128,123 @@ contract NumberBet is Ownable, ReentrancyGuard {
         emit BetPlaced(msg.sender, _numbers, totalBetRequired);
     }
 
-    function dissolveGame() external onlyOwner nonReentrant {
+     function endGame() external nonReentrant {
+        if (gameState != GameState.Betting) revert GameNotInBettingState();
+        if (block.timestamp < gameEndTime) revert GameNotEndedYet();
+
         uint256 currentPool = totalPool;
-        if (currentPool == 0) {
-            // Nothing to dissolve
-            return;
+        address platformRecipient = owner(); // Fee recipient is the contract owner
+
+        // --- Winner Selection (INSECURE - DEMO ONLY) ---
+        // DO NOT USE THIS IN PRODUCTION. It's predictable. Use Chainlink VRF for real randomness.
+        uint256 randomSeed = uint256(keccak256(abi.encodePacked(
+            blockhash(block.number - 1), // Use previous blockhash
+            block.timestamp,
+            msg.sender,
+            currentPool
+        )));
+        uint8 winningNumber = uint8((randomSeed % MAX_NUMBER) + 1); // Result between 1 and 100
+        // --- End Insecure Winner Selection ---
+
+        address winnerAddress = betsPlaced[winningNumber];
+        uint256 feeAmount = 0;
+        uint256 payoutAmount = 0;
+
+        // Reset pool *before* transfers
+        totalPool = 0;
+
+        if (currentPool > 0) {
+            // Calculate and potentially pay fee
+            feeAmount = (currentPool * PLATFORM_FEE_PERCENT_BPS) / 10000;
+            if (feeAmount > 0) {
+                 bool feeSuccess = usdtToken.transfer(platformRecipient, feeAmount);
+                 if (!feeSuccess) {
+                     totalPool = currentPool; // Revert pool amount if fee transfer fails
+                     revert TransferFailed();
+                 }
+                 emit PlatformFeePaid(platformRecipient, feeAmount);
+            }
+
+            payoutAmount = currentPool - feeAmount; // Amount remaining for winner/owner
+
+            if (payoutAmount > 0) {
+                address finalRecipient;
+                if (winnerAddress != address(0)) {
+                    // Pay the winner
+                    finalRecipient = winnerAddress;
+                } else {
+                    // No winner on the number, pay the owner
+                    finalRecipient = owner();
+                }
+
+                bool payoutSuccess = usdtToken.transfer(finalRecipient, payoutAmount);
+                if (!payoutSuccess) {
+                     // Revert state if payout fails. Fee already sent.
+                     // This is tricky. A pull pattern might be safer.
+                     // For simplicity, we revert pool and assume transfers mostly succeed.
+                     totalPool = currentPool; // Try to revert state
+                     // Note: Fee is already paid and not reverted here.
+                     revert TransferFailed();
+                }
+                 emit WinnerPaid(finalRecipient, payoutAmount);
+            }
         }
 
-        totalPool = 0; // Set pool to zero before transfer
+        // Transition state
+        gameState = GameState.Cooldown;
+        cooldownEndTime = block.timestamp + COOLDOWN_DURATION;
+        // gameEndTime remains the timestamp when this round ended.
 
-        // Reset state (consider gas implications for large number of bets)
-        // This is simple but potentially expensive. Alternative: leave state, only withdraw.
-        // For a simple game, reset is acceptable.
+        // Consider saving last winner/number if needed for UI
+        // lastWinningNumber = winningNumber;
+        // lastWinner = winnerAddress; // Could be address(0)
+
+        emit GameEnded(gameEndTime, currentPool, winningNumber, winnerAddress); // Emit original pool amount
+    }
+
+
+    function dissolveGame() external onlyOwner nonReentrant {
+        if (gameState == GameState.Betting) revert CannotDissolveActiveGame();
+
+        uint256 currentPool = totalPool;
+
+        // Reset state first
+        gameState = GameState.Idle;
+        gameEndTime = 0;
+        cooldownEndTime = 0;
+        totalPool = 0;
+
+        // Clear all bets (can be gas intensive)
         for (uint8 i = 1; i <= MAX_NUMBER; i++) {
              address bettor = betsPlaced[i];
              if (bettor != address(0)) {
-                 userBets[bettor][i] = false; // Clear user's bet record
-                 betsPlaced[i] = address(0); // Clear the main bet record
+                 userBets[bettor][i] = false;
+                 betsPlaced[i] = address(0);
              }
         }
 
-
-        bool success = usdtToken.transfer(owner(), currentPool);
-         if (!success) {
-             // If transfer fails, revert state changes (including pool reset)
-             totalPool = currentPool; // Revert pool amount
-             // Reverting state reset is complex, could lead to inconsistent state.
-             // Better to ensure transfer destination is valid or handle potential failure off-chain.
-             // For simplicity, we assume owner address can receive tokens.
-             // If concerned, could add checks or use pull pattern.
-             revert TransferFailed();
+        if (currentPool > 0) {
+            bool success = usdtToken.transfer(owner(), currentPool);
+            if (!success) {
+                 // Attempt to revert state if transfer fails
+                 // This is difficult to do perfectly without snapshots.
+                 // Set state back to Cooldown/Idle depending on previous state? Assume Idle.
+                 gameState = GameState.Idle; // Or previous state before dissolve call
+                 totalPool = currentPool;
+                 // Bets are already cleared, cannot easily revert that part here.
+                 revert TransferFailed();
+            }
         }
-
 
         emit GameDissolved(owner(), currentPool);
     }
 
-    // --- Timer Control (Temporary for Testing) ---
-    function _setGameEndTime(uint256 _endTime) external onlyOwner {
-        gameEndTime = _endTime;
-        // In real implementation, this would be set when a game starts/ends
-        // emit NewGameStarted(block.timestamp, _endTime); // Example event emission
-    }
-
-    function _setCooldownEndTime(uint256 _endTime) external onlyOwner {
-        cooldownEndTime = _endTime;
-        // In real implementation, this would be set when a game ends
-        // emit GameEnded(...);
-    }
 
     // --- View Functions ---
+
+    function getGameState() external view returns (GameState) {
+        return gameState;
+    }
 
     function getGameEndTime() external view returns (uint256) {
         return gameEndTime;
@@ -145,13 +255,10 @@ contract NumberBet is Ownable, ReentrancyGuard {
     }
 
     function getBetStatus(uint8 _number) external view returns (address) {
-        if (_number == 0 || _number > MAX_NUMBER) {
-             revert InvalidNumber(_number);
-         }
+        if (_number == 0 || _number > MAX_NUMBER) revert InvalidNumber(_number);
         return betsPlaced[_number];
     }
 
-    // Get all numbers a specific user has bet on
     function getUserBetNumbers(address _user) external view returns (uint8[] memory) {
         uint8 count = 0;
         for (uint8 i = 1; i <= MAX_NUMBER; i++) {
@@ -171,7 +278,6 @@ contract NumberBet is Ownable, ReentrancyGuard {
         return numbers;
     }
 
-     // Get all numbers currently bet on by anyone
      function getAllBetNumbers() external view returns (uint8[] memory) {
          uint8 count = 0;
          for (uint8 i = 1; i <= MAX_NUMBER; i++) {
@@ -190,5 +296,4 @@ contract NumberBet is Ownable, ReentrancyGuard {
          }
          return numbers;
      }
-
 } 

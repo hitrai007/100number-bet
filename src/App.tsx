@@ -7,111 +7,39 @@ import { sdk as frameSdk } from '@farcaster/frame-sdk';
 import './App.css';
 
 // --- Contract Configuration ---
-const NUMBER_BET_ADDRESS = '0xC3E84B23366f36041C02502a64F28d45681394F6' as const; // <-- New Address
+const NUMBER_BET_ADDRESS = '0xFd6a1e89eF0a591cd4cC37F38c83C8AFA533dda8' as const; // <-- Updated Address
 const USDT_MOCK_ADDRESS = '0xEF37f57D8a64Fd6EdF2184Ad4b2c4Cd718ec4538' as const; // Mock USDT on Base Sepolia
 const USDT_DECIMALS = 6;
 const BET_AMOUNT_PER_NUMBER_WEI = 100000n; // 0.1 USDT with 6 decimals (as BigInt)
 
 // ABI Snippets (Replace/add with your full ABI)
 const NUMBER_BET_ABI = [
-  // Keep existing ABI entries...
+  // Constructor
   {
-    "inputs": [],
-    "name": "BET_AMOUNT_PER_NUMBER",
-    "outputs": [ { "internalType": "uint256", "name": "", "type": "uint256" } ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [],
-    "name": "owner",
-    "outputs": [ { "internalType": "address", "name": "", "type": "address" } ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [],
-    "name": "totalPool",
-    "outputs": [ { "internalType": "uint256", "name": "", "type": "uint256" } ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [],
-    "name": "getAllBetNumbers",
-    "outputs": [ { "internalType": "uint8[]", "name": "", "type": "uint8[]" } ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [ { "internalType": "uint8[]", "name": "_numbers", "type": "uint8[]" } ],
-    "name": "placeBet",
-    "outputs": [],
+    "inputs": [ { "internalType": "address", "name": "_usdtTokenAddress", "type": "address" } ],
     "stateMutability": "nonpayable",
-    "type": "function"
+    "type": "constructor"
   },
-  {
-    "inputs": [],
-    "name": "dissolveGame",
-    "outputs": [],
-    "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  // --- Added for Timer Logic ---
-  {
-    "inputs": [],
-    "name": "gameState",
-    "outputs": [ { "internalType": "enum NumberBet.GameState", "name": "", "type": "uint8" } ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [],
-    "name": "gameEndTime",
-    "outputs": [ { "internalType": "uint256", "name": "", "type": "uint256" } ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [],
-    "name": "cooldownEndTime",
-    "outputs": [ { "internalType": "uint256", "name": "", "type": "uint256" } ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [],
-    "name": "startGame",
-    "outputs": [],
-    "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
-    "inputs": [],
-    "name": "endGame",
-    "outputs": [],
-    "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
-    "anonymous": false,
-    "inputs": [
-      { "indexed": false, "internalType": "uint256", "name": "startTime", "type": "uint256" },
-      { "indexed": false, "internalType": "uint256", "name": "endTime", "type": "uint256" }
-    ],
-    "name": "NewGameStarted",
-    "type": "event"
-  },
-  {
-    "anonymous": false,
-    "inputs": [
-      { "indexed": false, "internalType": "uint256", "name": "endTime", "type": "uint256" },
-      { "indexed": false, "internalType": "uint256", "name": "poolAmount", "type": "uint256" }
-      // Add winningNumber later if needed
-    ],
-    "name": "GameEnded",
-    "type": "event"
-  },
+  // Errors
+  { "inputs": [ { "internalType": "uint8", "name": "number", "type": "uint8" } ], "name": "AlreadyBetOnNumber", "type": "error" },
+  { "inputs": [], "name": "BettingNotActive", "type": "error" },
+  { "inputs": [], "name": "BettingPeriodOver", "type": "error" },
+  { "inputs": [], "name": "CannotDissolveActiveGame", "type": "error" },
+  { "inputs": [], "name": "CooldownNotOver", "type": "error" },
+  { "inputs": [], "name": "GameAlreadyEnded", "type": "error" }, // Keep existing errors...
+  { "inputs": [], "name": "GameNotEndedYet", "type": "error" },
+  { "inputs": [], "name": "GameNotInBettingState", "type": "error" },
+  { "inputs": [], "name": "GameStillActive", "type": "error" },
+  { "inputs": [], "name": "InsufficientAllowance", "type": "error" },
+  { "inputs": [ { "internalType": "uint8", "name": "number", "type": "uint8" } ], "name": "InvalidNumber", "type": "error" },
+  { "inputs": [], "name": "NoNumbersToBet", "type": "error" },
+  { "inputs": [ { "internalType": "uint8", "name": "number", "type": "uint8" } ], "name": "NumberAlreadyBet", "type": "error" },
+  { "inputs": [ { "internalType": "address", "name": "owner", "type": "address" } ], "name": "OwnableInvalidOwner", "type": "error" },
+  { "inputs": [ { "internalType": "address", "name": "account", "type": "address" } ], "name": "OwnableUnauthorizedAccount", "type": "error" },
+  { "inputs": [], "name": "ReentrancyGuardReentrantCall", "type": "error" },
+  { "inputs": [], "name": "TransferFailed", "type": "error" },
+  { "inputs": [], "name": "ZeroAddress", "type": "error" },
+  // Events
   {
     "anonymous": false,
     "inputs": [
@@ -119,8 +47,7 @@ const NUMBER_BET_ABI = [
       { "indexed": false, "internalType": "uint8[]", "name": "numbers", "type": "uint8[]" },
       { "indexed": false, "internalType": "uint256", "name": "totalAmount", "type": "uint256" }
     ],
-    "name": "BetPlaced",
-    "type": "event"
+    "name": "BetPlaced", "type": "event"
   },
   {
     "anonymous": false,
@@ -128,24 +55,77 @@ const NUMBER_BET_ABI = [
       { "indexed": true, "internalType": "address", "name": "owner", "type": "address" },
       { "indexed": false, "internalType": "uint256", "name": "totalAmount", "type": "uint256" }
     ],
-    "name": "GameDissolved",
-    "type": "event"
+    "name": "GameDissolved", "type": "event"
   },
-  // --- Errors ---
-  { "inputs": [], "name": "BettingNotActive", "type": "error" },
-  { "inputs": [], "name": "BettingPeriodOver", "type": "error" },
-  { "inputs": [], "name": "GameAlreadyEnded", "type": "error" },
-  { "inputs": [], "name": "GameNotEndedYet", "type": "error" },
-  { "inputs": [], "name": "GameStillActive", "type": "error" },
-  { "inputs": [], "name": "CooldownNotOver", "type": "error" },
-  { "inputs": [], "name": "GameNotInBettingState", "type": "error" },
-  { "inputs": [], "name": "CannotDissolveActiveGame", "type": "error" },
-  { "inputs": [ { "internalType": "uint8", "name": "number", "type": "uint8" } ], "name": "InvalidNumber", "type": "error" },
-  { "inputs": [ { "internalType": "uint8", "name": "number", "type": "uint8" } ], "name": "NumberAlreadyBet", "type": "error" },
-  { "inputs": [ { "internalType": "uint8", "name": "number", "type": "uint8" } ], "name": "AlreadyBetOnNumber", "type": "error" },
-  { "inputs": [], "name": "NoNumbersToBet", "type": "error" },
-  { "inputs": [], "name": "InsufficientAllowance", "type": "error" },
-  { "inputs": [], "name": "TransferFailed", "type": "error" }
+  {
+    "anonymous": false,
+    "inputs": [
+      { "indexed": false, "internalType": "uint256", "name": "endTime", "type": "uint256" },
+      { "indexed": false, "internalType": "uint256", "name": "poolAmount", "type": "uint256" },
+      { "indexed": false, "internalType": "uint8", "name": "winningNumber", "type": "uint8" },
+      { "indexed": true, "internalType": "address", "name": "winner", "type": "address" }
+    ],
+    "name": "GameEnded", "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      { "indexed": false, "internalType": "uint256", "name": "startTime", "type": "uint256" },
+      { "indexed": false, "internalType": "uint256", "name": "endTime", "type": "uint256" }
+    ],
+    "name": "NewGameStarted", "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      { "indexed": true, "internalType": "address", "name": "previousOwner", "type": "address" },
+      { "indexed": true, "internalType": "address", "name": "newOwner", "type": "address" }
+    ],
+    "name": "OwnershipTransferred", "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      { "indexed": true, "internalType": "address", "name": "recipient", "type": "address" },
+      { "indexed": false, "internalType": "uint256", "name": "amount", "type": "uint256" }
+    ],
+    "name": "PlatformFeePaid", "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      { "indexed": true, "internalType": "address", "name": "winner", "type": "address" },
+      { "indexed": false, "internalType": "uint256", "name": "amount", "type": "uint256" }
+    ],
+    "name": "WinnerPaid", "type": "event"
+  },
+  // View Functions
+  { "inputs": [], "name": "BET_AMOUNT_PER_NUMBER", "outputs": [ { "internalType": "uint256", "name": "", "type": "uint256" } ], "stateMutability": "view", "type": "function" },
+  { "inputs": [], "name": "COOLDOWN_DURATION", "outputs": [ { "internalType": "uint256", "name": "", "type": "uint256" } ], "stateMutability": "view", "type": "function" },
+  { "inputs": [], "name": "GAME_DURATION", "outputs": [ { "internalType": "uint256", "name": "", "type": "uint256" } ], "stateMutability": "view", "type": "function" },
+  { "inputs": [], "name": "MAX_NUMBER", "outputs": [ { "internalType": "uint8", "name": "", "type": "uint8" } ], "stateMutability": "view", "type": "function" },
+  { "inputs": [], "name": "PLATFORM_FEE_PERCENT_BPS", "outputs": [ { "internalType": "uint16", "name": "", "type": "uint16" } ], "stateMutability": "view", "type": "function" },
+  { "inputs": [ { "internalType": "uint8", "name": "", "type": "uint8" } ], "name": "betsPlaced", "outputs": [ { "internalType": "address", "name": "", "type": "address" } ], "stateMutability": "view", "type": "function" },
+  { "inputs": [], "name": "cooldownEndTime", "outputs": [ { "internalType": "uint256", "name": "", "type": "uint256" } ], "stateMutability": "view", "type": "function" },
+  { "inputs": [], "name": "gameEndTime", "outputs": [ { "internalType": "uint256", "name": "", "type": "uint256" } ], "stateMutability": "view", "type": "function" },
+  { "inputs": [], "name": "gameState", "outputs": [ { "internalType": "enum NumberBet.GameState", "name": "", "type": "uint8" } ], "stateMutability": "view", "type": "function" },
+  { "inputs": [], "name": "getAllBetNumbers", "outputs": [ { "internalType": "uint8[]", "name": "", "type": "uint8[]" } ], "stateMutability": "view", "type": "function" },
+  { "inputs": [ { "internalType": "uint8", "name": "_number", "type": "uint8" } ], "name": "getBetStatus", "outputs": [ { "internalType": "address", "name": "", "type": "address" } ], "stateMutability": "view", "type": "function" },
+  { "inputs": [], "name": "getCooldownEndTime", "outputs": [ { "internalType": "uint256", "name": "", "type": "uint256" } ], "stateMutability": "view", "type": "function" },
+  { "inputs": [], "name": "getGameEndTime", "outputs": [ { "internalType": "uint256", "name": "", "type": "uint256" } ], "stateMutability": "view", "type": "function" },
+  { "inputs": [], "name": "getGameState", "outputs": [ { "internalType": "enum NumberBet.GameState", "name": "", "type": "uint8" } ], "stateMutability": "view", "type": "function" },
+  { "inputs": [ { "internalType": "address", "name": "_user", "type": "address" } ], "name": "getUserBetNumbers", "outputs": [ { "internalType": "uint8[]", "name": "", "type": "uint8[]" } ], "stateMutability": "view", "type": "function" },
+  { "inputs": [], "name": "owner", "outputs": [ { "internalType": "address", "name": "", "type": "address" } ], "stateMutability": "view", "type": "function" },
+  { "inputs": [], "name": "totalPool", "outputs": [ { "internalType": "uint256", "name": "", "type": "uint256" } ], "stateMutability": "view", "type": "function" },
+  { "inputs": [], "name": "usdtToken", "outputs": [ { "internalType": "contract IERC20", "name": "", "type": "address" } ], "stateMutability": "view", "type": "function" },
+  { "inputs": [ { "internalType": "address", "name": "", "type": "address" }, { "internalType": "uint8", "name": "", "type": "uint8" } ], "name": "userBets", "outputs": [ { "internalType": "bool", "name": "", "type": "bool" } ], "stateMutability": "view", "type": "function" },
+  // State Changing Functions
+  { "inputs": [], "name": "dissolveGame", "outputs": [], "stateMutability": "nonpayable", "type": "function" },
+  { "inputs": [], "name": "endGame", "outputs": [], "stateMutability": "nonpayable", "type": "function" },
+  { "inputs": [ { "internalType": "uint8[]", "name": "_numbers", "type": "uint8[]" } ], "name": "placeBet", "outputs": [], "stateMutability": "nonpayable", "type": "function" },
+  { "inputs": [], "name": "renounceOwnership", "outputs": [], "stateMutability": "nonpayable", "type": "function" },
+  { "inputs": [], "name": "startGame", "outputs": [], "stateMutability": "nonpayable", "type": "function" },
+  { "inputs": [ { "internalType": "address", "name": "newOwner", "type": "address" } ], "name": "transferOwnership", "outputs": [], "stateMutability": "nonpayable", "type": "function" }
 ] as const; // Mark ABI as const for better type inference
 
 
