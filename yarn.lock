@@ -2093,7 +2093,7 @@
     viem "2.x"
     zod "^3.22.2"
 
-"@wagmi/connectors@5.8.0":
+"@wagmi/connectors@5.8.0", "@wagmi/connectors@^5.8.0":
   version "5.8.0"
   resolved "https://registry.yarnpkg.com/@wagmi/connectors/-/connectors-5.8.0.tgz#9bf3dd0e0d396c34993254d8a43476c787876cde"
   integrity sha512-aCibsK09vHRQnbH1FbaMV/bl5JW24v0QG2vBapUWctWGh6qmrE0CM43MrvN733ffWCsMn7OBQU5OCxLdkgk6xA==

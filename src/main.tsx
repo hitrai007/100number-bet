@@ -7,6 +7,7 @@ import { WagmiProvider, createConfig, http } from 'wagmi';
 import { baseSepolia } from 'wagmi/chains'; // Reverted to only Base Sepolia
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { farcasterFrame as miniAppConnector } from '@farcaster/frame-wagmi-connector';
+import { injected } from '@wagmi/connectors'; // Import injected connector
 
 // Configure Wagmi
 const config = createConfig({
@@ -15,7 +16,8 @@ const config = createConfig({
     [baseSepolia.id]: http(), // Base Sepolia RPC
   },
   connectors: [
-    miniAppConnector()
+    miniAppConnector(),
+    injected(), // Add injected connector for MetaMask etc.
   ]
 });
 
