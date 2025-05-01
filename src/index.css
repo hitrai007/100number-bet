@@ -89,3 +89,18 @@ body {
   /* e.g., color: grey; */
   /* e.g., cursor: not-allowed; */
 }
+
+/* Style for buttons representing taken numbers */
+.grid-button.taken {
+  background-color: #cccccc; /* Grey background */
+  cursor: not-allowed;
+  /* Optional: Different border or text color */
+  /* border: 2px inset #aaaaaa; */
+  /* color: #888888; */
+}
+
+/* Ensure selected style doesn't override taken style background */
+.grid-button.taken.selected {
+   background-color: #cccccc; /* Keep grey even if selected locally */
+   /* You might adjust border/text if you have specific selected+taken look */
+}
