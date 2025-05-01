@@ -16,6 +16,7 @@ body {
 .title-bar-text {
   text-align: center;
   flex-grow: 1; /* Allow text to take available space for centering */
+  margin-right: 0 !important; /* Override 98.css margin */
 }
 
 .app-container {
