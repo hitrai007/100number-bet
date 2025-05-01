@@ -110,7 +110,6 @@ contract NumberBet is Ownable, ReentrancyGuard {
         for (uint256 i = 0; i < len; i++) {
             uint8 number = _numbers[i];
             if (number == 0 || number > MAX_NUMBER) revert InvalidNumber(number);
-            if (betsPlaced[number] != address(0)) revert NumberAlreadyBet(number);
             if (userBets[msg.sender][number]) revert AlreadyBetOnNumber(number);
         }
 

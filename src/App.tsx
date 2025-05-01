@@ -7,7 +7,7 @@ import { sdk as frameSdk } from '@farcaster/frame-sdk';
 import './index.css';
 
 // --- Contract Configuration ---
-const NUMBER_BET_ADDRESS = '0xFd6a1e89eF0a591cd4cC37F38c83C8AFA533dda8' as const; // <-- Updated Address
+const NUMBER_BET_ADDRESS = '0x8256D1F0f9b17Ca075305a8439446f60b9351988' as const; // <-- NEWEST Address
 const USDT_MOCK_ADDRESS = '0xEF37f57D8a64Fd6EdF2184Ad4b2c4Cd718ec4538' as const; // Mock USDT on Base Sepolia
 const USDT_DECIMALS = 6;
 const BET_AMOUNT_PER_NUMBER_WEI = 100000n; // 0.1 USDT with 6 decimals (as BigInt)
@@ -26,7 +26,7 @@ const NUMBER_BET_ABI = [
   { "inputs": [], "name": "BettingPeriodOver", "type": "error" },
   { "inputs": [], "name": "CannotDissolveActiveGame", "type": "error" },
   { "inputs": [], "name": "CooldownNotOver", "type": "error" },
-  { "inputs": [], "name": "GameAlreadyEnded", "type": "error" }, // Keep existing errors...
+  { "inputs": [], "name": "GameAlreadyEnded", "type": "error" },
   { "inputs": [], "name": "GameNotEndedYet", "type": "error" },
   { "inputs": [], "name": "GameNotInBettingState", "type": "error" },
   { "inputs": [], "name": "GameStillActive", "type": "error" },
@@ -253,16 +253,28 @@ function App() {
     functionName: 'cooldownEndTime',
   });
 
+  // --- Fetch User's Bets ---
+  const { data: userBetNumbersData, refetch: refetchUserBetNumbers } = useReadContract({
+      address: NUMBER_BET_ADDRESS,
+      abi: NUMBER_BET_ABI,
+      functionName: 'getUserBetNumbers',
+      args: [address!], // Pass connected user's address
+  });
+  const userBetNumbers: number[] = userBetNumbersData?.map(Number) ?? [];
+
   // --- Refetch Logic ---
   const refetchAllContractData = useCallback(() => {
       console.log("Refetching all contract data...");
       refetchOwner();
       refetchTotalPool();
-      refetchAllBetNumbers();
+      // refetchAllBetNumbers(); // Removed, no longer used for button disabling
       refetchGameState();
       refetchGameEndTime();
       refetchCooldownEndTime();
-  }, [refetchOwner, refetchTotalPool, refetchAllBetNumbers, refetchGameState, refetchGameEndTime, refetchCooldownEndTime]);
+      if (address) {
+          refetchUserBetNumbers(); // Refetch user-specific bets
+      }
+  }, [address, refetchOwner, refetchTotalPool, refetchGameState, refetchGameEndTime, refetchCooldownEndTime, refetchUserBetNumbers]); // Added dependencies
 
 
   // --- USDT Allowance Check ---
@@ -294,7 +306,7 @@ function App() {
        }
        if (isApproveError) {
            console.error('Approval Error:', approveError); // Use error from useWriteContract
-           alert(`Approval failed: ${approveError?.message || 'Unknown error'}`);
+           alert(`Approval failed: ${approveError?.message ?? 'Unknown error'}`);
        }
    }, [isApproveSuccess, isApproveError, approveReceipt, refetchUsdtAllowance, approveError]); // Add dependencies
 
@@ -310,7 +322,7 @@ function App() {
         }
         if (isPlaceBetError) {
             console.error('Place Bet Error:', placeBetError); // Use error from useWriteContract
-            alert(`Placing bet failed: ${placeBetError?.message || 'Unknown error'}`);
+            alert(`Placing bet failed: ${placeBetError?.message ?? 'Unknown error'}`);
             refetchAllContractData(); // Refetch state
         }
     }, [isPlaceBetSuccess, isPlaceBetError, placeBetReceipt, refetchAllContractData, refetchUsdtAllowance, placeBetError]);
@@ -325,7 +337,7 @@ function App() {
         }
         if (isDissolveErrorHook) {
             console.error('Dissolve Game Error:', dissolveError); // Use error from useWriteContract
-            alert(`Dissolving game failed: ${dissolveError?.message || 'Unknown error'}`);
+            alert(`Dissolving game failed: ${dissolveError?.message ?? 'Unknown error'}`);
         }
     }, [isDissolveSuccess, isDissolveErrorHook, dissolveReceipt, refetchAllContractData, dissolveError]);
 
@@ -339,7 +351,7 @@ function App() {
         }
         if (isStartErrorHook) {
             console.error('Start Game Error:', startError); // Use error from useWriteContract
-            alert(`Starting game failed: ${startError?.message || 'Unknown error'}`);
+            alert(`Starting game failed: ${startError?.message ?? 'Unknown error'}`);
         }
     }, [isStartSuccess, isStartErrorHook, startReceipt, refetchAllContractData, startError]);
 
@@ -353,7 +365,7 @@ function App() {
          }
          if (isEndErrorHook) {
              console.error('End Game Error:', endError); // Use error from useWriteContract
-             alert(`Ending game failed: ${endError?.message || 'Unknown error'}`);
+             alert(`Ending game failed: ${endError?.message ?? 'Unknown error'}`);
          }
      }, [isEndSuccess, isEndErrorHook, endReceipt, refetchAllContractData, endError]);
 
@@ -587,7 +599,6 @@ function App() {
          <div className="status-bar">
             <p className="status-bar-field">{getStatusText()}</p>
             <p className="status-bar-field">Pool: {formatBigInt(totalPool)} USDT</p>
-            <p className="status-bar-field">Owner: {formatAddress(owner)}</p>
              <p className="status-bar-field">Wallet: {formatAddress(address)}</p>
             {isConnected ? (
                 <button onClick={handleDisconnectWallet} className="connect-button">Disconnect</button>
@@ -602,18 +613,18 @@ function App() {
           {[...Array(100)].map((_, i) => {
             const num = i + 1;
             const isSelected = selectedNumbers.includes(num);
-            const isTaken = allBetNumbers.includes(num);
-            const isDisabled = isTaken || currentGameState !== GameState.Betting; // Disable if taken or not in betting state
+            const hasUserBet = userBetNumbers.includes(num);
+            const isDisabled = hasUserBet || currentGameState !== GameState.Betting; // Disable if user already bet or not in betting state
 
             return (
               <button
                 key={num}
-                className={`grid-button ${isSelected ? 'selected' : ''} ${isTaken ? 'taken' : ''}`}
+                className={`grid-button ${isSelected ? 'selected' : ''} ${hasUserBet ? 'user-bet' : ''}`}
                 onClick={() => handleNumberClick(num)}
                 disabled={isDisabled}
                 // eslint-disable-next-line react/jsx-boolean-value
                 aria-pressed={isSelected}
-                aria-label={`Number ${num}${isTaken ? ' (Taken)' : ''}${isSelected ? ' (Selected)' : ''}`}
+                aria-label={`Number ${num}${hasUserBet ? ' (Your Bet)' : ''}${isSelected ? ' (Selected)' : ''}`}
               >
                 {num}
               </button>

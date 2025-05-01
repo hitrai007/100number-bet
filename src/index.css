@@ -99,14 +99,9 @@ body {
 
 /* Style for buttons representing taken numbers */
 .grid-button.taken {
-  /* background-color: #cccccc; */ /* Grey background */
-  background-color: lightcoral; /* Red background for taken */
-  color: black; /* Ensure text is readable on red */
-  cursor: not-allowed;
-  border-style: inset; /* Make it look pressed/disabled */
-  /* Optional: Different border or text color */
-  /* border: 2px inset #aaaaaa; */
-  /* color: #888888; */
+  background-color: lightcoral !important; /* Red for taken */
+  border-style: inset !important;
+  color: white !important;
 }
 
 /* Ensure selected style doesn't override taken style background */
@@ -116,4 +111,19 @@ body {
    color: black; /* Keep text color */
    border-style: inset; /* Keep inset border */
    /* You might adjust border/text if you have specific selected+taken look */
+}
+
+/* Style for buttons representing numbers the user has bet on */
+.grid-button.user-bet {
+  border-color: #4caf50 !important; /* Green border */
+  border-width: 3px !important; /* Make border thicker */
+  /* Optional: Add subtle background or keep default */
+  /* background-color: #e8f5e9; */
+}
+
+/* Hide non-functional window controls from 98.css */
+.title-bar-controls button[aria-label="Minimize"],
+.title-bar-controls button[aria-label="Maximize"],
+.title-bar-controls button[aria-label="Close"] {
+  display: none !important;
 }
