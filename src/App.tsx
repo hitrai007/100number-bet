@@ -387,7 +387,7 @@ function App() {
 
   const handleNumberClick = (num: number) => {
     // Prevent selecting taken numbers or during non-betting states
-    if (allBetNumbers.includes(num) || currentGameState !== GameState.Betting) {
+    if (userBetNumbers.includes(num) || currentGameState !== GameState.Betting) {
         return;
     }
     setSelectedNumbers(prev =>
