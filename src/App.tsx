@@ -4,7 +4,7 @@ import { useAccount, useConnect, useDisconnect, useReadContract, useWriteContrac
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { injected } from '@wagmi/connectors';
 import { sdk as frameSdk } from '@farcaster/frame-sdk';
-import './App.css';
+import './index.css';
 
 // --- Contract Configuration ---
 const NUMBER_BET_ADDRESS = '0xFd6a1e89eF0a591cd4cC37F38c83C8AFA533dda8' as const; // <-- Updated Address
