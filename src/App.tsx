@@ -1,7 +1,7 @@
 import { sdk } from "@farcaster/frame-sdk";
 import { useEffect, useState } from "react";
 import { useAccount, useConnect, useReadContract, useWriteContract, useWaitForTransactionReceipt } from 'wagmi';
-import { baseSepolia } from 'wagmi/chains';
+// import { baseSepolia } from 'wagmi/chains'; // Removed unused import
 import { parseUnits, formatUnits } from 'viem'; // For handling decimals
 
 // --- Contract Config ---
@@ -392,7 +392,12 @@ function App() {
   const { address, isConnected } = useAccount();
   const { connect, connectors } = useConnect();
   const { data: writeContractHash, writeContract, isPending: isWritePending, error: writeError } = useWriteContract();
+   // Add placeholder usage for build
+   if (writeError) console.error("Write Contract Error:", writeError);
   const { isLoading: isConfirming, isSuccess: isConfirmed, error: confirmationError } = useWaitForTransactionReceipt({ hash: writeContractHash });
+   // Add placeholder usage for build
+   if (isConfirmed) console.log("Transaction confirmed:", writeContractHash);
+   if (confirmationError) console.error("Confirmation Error:", confirmationError);
 
   // --- Component State ---
   const [selectedNumbers, setSelectedNumbers] = useState<number[]>([]);
