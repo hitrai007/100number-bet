@@ -203,7 +203,7 @@ function App() {
   const [isFrame, setIsFrame] = useState(false);
 
   // Check if running in Farcaster Frame context
-   useEffect(() => {
+  useEffect(() => {
     // Check if frameSdk object exists
     if (frameSdk && frameSdk.actions) {
         setIsFrame(true);
@@ -563,7 +563,7 @@ function App() {
 
   const getStatusText = (): string => {
       switch (currentGameState) {
-          case GameState.Idle: return "Game Idle";
+          case GameState.Idle: return "Waiting for game to start...";
           case GameState.Betting: return `Betting Ends In: ${displayTimeLeft}`;
           case GameState.Cooldown: return `Cooldown Ends In: ${displayTimeLeft}`;
           default: return "Loading State...";
@@ -601,7 +601,7 @@ function App() {
 
 
         {/* Number Grid */}
-        <div className="grid-container">
+      <div className="grid-container">
           {[...Array(100)].map((_, i) => {
             const num = i + 1;
             const isSelected = selectedNumbers.includes(num);
@@ -660,12 +660,12 @@ function App() {
              )}
 
              {isOwnerConnected && (
-                 <button
+          <button
                     onClick={handleDissolveGame}
                     disabled={!canDissolve || isDissolving || isDissolvePending}
                  >
                      {isDissolving || isDissolvePending ? 'Dissolving...' : 'Dissolve Game'}
-                 </button>
+          </button>
              )}
          </div>
 
@@ -676,7 +676,7 @@ function App() {
                  {dissolveError && <p>Dissolve Error: {dissolveError.message}</p>}
                  {startError && <p>Start Game Error: {startError.message}</p>}
                  {endError && <p>End Game Error: {endError.message}</p>}
-           </div>
+      </div>
 
       </div>
     </div>
