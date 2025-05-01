@@ -227,7 +227,7 @@ function App() {
     functionName: 'totalPool',
   });
 
-  const { data: allBetNumbersData, refetch: refetchAllBetNumbers } = useReadContract({
+  const { data: allBetNumbersData } = useReadContract({
     address: NUMBER_BET_ADDRESS,
     abi: NUMBER_BET_ABI,
     functionName: 'getAllBetNumbers',
@@ -267,7 +267,6 @@ function App() {
       console.log("Refetching all contract data...");
       refetchOwner();
       refetchTotalPool();
-      // refetchAllBetNumbers(); // Removed, no longer used for button disabling
       refetchGameState();
       refetchGameEndTime();
       refetchCooldownEndTime();
