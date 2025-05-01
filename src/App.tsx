@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback } from 'react';
-import { formatUnits, Address } from 'viem';
+import { formatUnits } from 'viem';
 import { useAccount, useConnect, useDisconnect, useReadContract, useWriteContract, useWaitForTransactionReceipt } from 'wagmi';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { injected } from '@wagmi/connectors';
