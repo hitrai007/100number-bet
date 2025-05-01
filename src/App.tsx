@@ -657,12 +657,15 @@ function App() {
                     {isStarting || isStartPending ? 'Starting Game...' : 'Start New Game'}
                 </button>
             )}
-             <button
-                 onClick={handleEndGame}
-                 disabled={!isConnected || !canEndGame || isEnding || isEndPending}
-             >
-                 {isEnding || isEndPending ? 'Ending Period...' : 'End Betting Period'}
-            </button>
+             {/* Wrap End Betting Period button in owner check */}
+             {isOwnerConnected && (
+                 <button
+                     onClick={handleEndGame}
+                     disabled={!isConnected || !canEndGame || isEnding || isEndPending}
+                 >
+                     {isEnding || isEndPending ? 'Ending Period...' : 'End Betting Period'}
+                 </button>
+             )}
 
              {isOwnerConnected && (
                  <button
