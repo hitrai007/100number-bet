@@ -215,24 +215,33 @@ function App() {
   }, []);
 
    // --- Read Contract Data ---
-   const { data: owner, refetch: refetchOwner } = useReadContract({
+   const { data: owner, refetch: refetchOwner, status: ownerStatus, error: ownerError } = useReadContract({
     address: NUMBER_BET_ADDRESS,
     abi: NUMBER_BET_ABI,
     functionName: 'owner',
   });
 
-  const { data: totalPool, refetch: refetchTotalPool } = useReadContract({
+  const { data: totalPool, refetch: refetchTotalPool, status: poolStatus, error: poolError } = useReadContract({
     address: NUMBER_BET_ADDRESS,
     abi: NUMBER_BET_ABI,
     functionName: 'totalPool',
   });
 
   // --- New Timer/State Reads ---
-  const { data: currentGameState, refetch: refetchGameState } = useReadContract({
+  const { data: currentGameState, refetch: refetchGameState, status: gameStateStatus, error: gameStateError } = useReadContract({
     address: NUMBER_BET_ADDRESS,
     abi: NUMBER_BET_ABI,
     functionName: 'gameState',
   }); // Returns 0 (Idle), 1 (Betting), 2 (Cooldown)
+
+  // Add logging for read hook statuses
+  useEffect(() => {
+    console.log('Read Contract Statuses:', {
+      owner: { status: ownerStatus, error: ownerError },
+      totalPool: { status: poolStatus, error: poolError },
+      gameState: { status: gameStateStatus, error: gameStateError },
+    });
+  }, [ownerStatus, poolStatus, gameStateStatus, ownerError, poolError, gameStateError]);
 
   const { data: gameEndTime, refetch: refetchGameEndTime } = useReadContract({
     address: NUMBER_BET_ADDRESS,
