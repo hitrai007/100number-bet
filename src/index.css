@@ -72,7 +72,7 @@ body {
 }
 
 .grid-button.selected {
-  background-color: navy;
+  background-color: lightcoral; /* Change to red */
   color: white;
   border-style: inset;
 }
@@ -117,8 +117,7 @@ body {
 .grid-button.user-bet {
   border-color: #4caf50 !important; /* Green border */
   border-width: 3px !important; /* Make border thicker */
-  /* Optional: Add subtle background or keep default */
-  /* background-color: #e8f5e9; */
+  background-color: buttonface; /* Ensure default background */
 }
 
 /* Hide non-functional window controls from 98.css */

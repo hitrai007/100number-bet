@@ -282,7 +282,7 @@ function App() {
   const { data: approveHash, writeContract: approveUsdt, isPending: isApprovePending, error: approveError } = useWriteContract();
   const { data: placeBetHash, writeContract: placeBet, isPending: isPlaceBetPending, error: placeBetError } = useWriteContract();
   const { data: dissolveHash, writeContract: dissolveGame, isPending: isDissolvePending, error: dissolveError } = useWriteContract();
-  const { data: startHash, writeContract: startGame, isPending: isStartPending, error: startError } = useWriteContract();
+  const { data: startHash, writeContract: startGame, isPending: isStartPending, error: startError, reset: resetStartGame } = useWriteContract();
   const { data: endHash, writeContract: endGame, isPending: isEndPending, error: endError } = useWriteContract();
 
 
@@ -340,12 +340,14 @@ function App() {
             console.log('Game Started! Tx:', startReceipt.transactionHash);
             alert('New Game Started Successfully!');
             refetchAllContractData();
+            resetStartGame(); // Reset the hook state
         }
         if (isStartErrorHook) {
             console.error('Start Game Error:', startError); // Use error from useWriteContract
             alert(`Starting game failed: ${startError?.message ?? 'Unknown error'}`);
+            resetStartGame(); // Reset the hook state even on error
         }
-    }, [isStartSuccess, isStartErrorHook, startReceipt, refetchAllContractData, startError]);
+    }, [isStartSuccess, isStartErrorHook, startReceipt, refetchAllContractData, startError, resetStartGame]); // Add resetStartGame to dependencies
 
     // End Game Transaction
     const { data: endReceipt, isLoading: isEnding, isSuccess: isEndSuccess, isError: isEndErrorHook } = useWaitForTransactionReceipt({ hash: endHash });
@@ -379,10 +381,15 @@ function App() {
   };
 
   const handleNumberClick = (num: number) => {
+    console.log(`handleNumberClick: num=${num}, gameState=${currentGameState}, userBets=${JSON.stringify(userBetNumbers)}`);
     // Prevent selecting taken numbers or during non-betting states
-    if (userBetNumbers.includes(num) || currentGameState !== GameState.Betting) {
+    const isAlreadyBetByUser = userBetNumbers.includes(num);
+    const isBettingActive = currentGameState === GameState.Betting;
+    if (isAlreadyBetByUser || !isBettingActive) {
+        console.log(`Click blocked: isAlreadyBetByUser=${isAlreadyBetByUser}, isBettingActive=${isBettingActive}`);
         return;
     }
+    console.log("Calling setSelectedNumbers...");
     setSelectedNumbers(prev =>
       prev.includes(num) ? prev.filter(n => n !== num) : [...prev, num]
     );
@@ -611,7 +618,8 @@ function App() {
             return (
               <button
                 key={num}
-                className={`grid-button ${isSelected ? 'selected' : ''} ${hasUserBet ? 'user-bet' : ''}`}
+                // Apply user-bet style first, then selected if not user-bet
+                className={`grid-button ${hasUserBet ? 'user-bet' : isSelected ? 'selected' : ''}`}
                 onClick={() => handleNumberClick(num)}
                 disabled={isDisabled}
                 // eslint-disable-next-line react/jsx-boolean-value
