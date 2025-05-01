@@ -535,8 +535,28 @@ function App() {
   };
 
   const handleConnectWallet = () => {
-    if (connectors.length > 0) {
-       connect({ connector: connectors[0] });
+    // Find the injected connector (e.g., MetaMask)
+    const injectedConnector = connectors.find(
+      (c) => c.id === 'injected' || c.name === 'MetaMask'
+    );
+    // Find the Farcaster Frame connector
+    const farcasterConnector = connectors.find(
+      (c) => c.id === 'farcasterFrame'
+    );
+
+    // Prioritize Farcaster connector if available (likely inside the frame)
+    // Otherwise, use the injected connector if found (for browser)
+    const connectorToUse = farcasterConnector ?? injectedConnector;
+
+    if (connectorToUse) {
+      connect({ connector: connectorToUse });
+    } else if (connectors.length > 0) {
+      // Fallback: try the first available connector if specific ones aren't found
+      console.warn("Could not find preferred connector, trying the first available.");
+      connect({ connector: connectors[0] });
+    } else {
+      console.error("No connectors available.");
+      // TODO: Provide feedback to user (e.g., install MetaMask)
     }
   };
 
