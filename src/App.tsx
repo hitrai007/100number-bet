@@ -7,7 +7,7 @@ import { sdk as frameSdk } from '@farcaster/frame-sdk';
 import './index.css';
 
 // --- Contract Configuration ---
-const NUMBER_BET_ADDRESS = '0x8256D1F0f9b17Ca075305a8439446f60b9351988' as const; // <-- NEWEST Address
+const NUMBER_BET_ADDRESS = '0x5FbDB2315678afecb367f032d93F642f64180aa3' as const; // <-- NEWEST Address (Admin can dissolve/end anytime)
 const USDT_MOCK_ADDRESS = '0xEF37f57D8a64Fd6EdF2184Ad4b2c4Cd718ec4538' as const; // Mock USDT on Base Sepolia
 const USDT_DECIMALS = 6;
 const BET_AMOUNT_PER_NUMBER_WEI = 100000n; // 0.1 USDT with 6 decimals (as BigInt)
@@ -578,7 +578,7 @@ function App() {
   };
 
    const canStartGame = currentGameState === GameState.Idle || (currentGameState === GameState.Cooldown && (cooldownEndTime ? BigInt(Math.floor(Date.now() / 1000)) >= cooldownEndTime : true));
-   const canEndGame = currentGameState === GameState.Betting && (gameEndTime ? BigInt(Math.floor(Date.now() / 1000)) >= gameEndTime : false);
+   const canEndGame = currentGameState === GameState.Betting;
    const canDissolve = currentGameState !== GameState.Betting;
 
 

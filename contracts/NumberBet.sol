@@ -129,7 +129,6 @@ contract NumberBet is Ownable, ReentrancyGuard {
 
      function endGame() external nonReentrant {
         if (gameState != GameState.Betting) revert GameNotInBettingState();
-        if (block.timestamp < gameEndTime) revert GameNotEndedYet();
 
         uint256 currentPool = totalPool;
         address platformRecipient = owner(); // Fee recipient is the contract owner
@@ -203,8 +202,6 @@ contract NumberBet is Ownable, ReentrancyGuard {
 
 
     function dissolveGame() external onlyOwner nonReentrant {
-        if (gameState == GameState.Betting) revert CannotDissolveActiveGame();
-
         uint256 currentPool = totalPool;
 
         // Reset state first
