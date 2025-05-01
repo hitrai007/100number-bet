@@ -595,7 +595,7 @@ function App() {
     <div className="app-container window">
       {/* Display Total Pool */}
       <div className="title-bar">
-        <div className="title-bar-text">100 Number Bet Game</div>
+        <div className="title-bar-text">Just Bet</div>
       </div>
       <div className="window-body">
         <p style={{ textAlign: 'center', fontWeight: 'bold', fontSize: '1.1rem', marginBottom: '10px' }}>
