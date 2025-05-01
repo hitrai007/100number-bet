@@ -12,6 +12,12 @@ body {
   box-sizing: border-box;
 }
 
+/* Center the title bar text */
+.title-bar-text {
+  text-align: center;
+  flex-grow: 1; /* Allow text to take available space for centering */
+}
+
 .app-container {
   display: flex;
   flex-direction: column;
