@@ -1,8 +1,7 @@
 import { useState, useEffect, useCallback } from 'react';
-import { formatUnits, parseUnits, Address } from 'viem';
+import { formatUnits, Address } from 'viem';
 import { useAccount, useConnect, useDisconnect, useReadContract, useWriteContract, useWaitForTransactionReceipt } from 'wagmi';
-import { baseSepolia } from 'wagmi/chains'; // Or your desired chain
-import { QueryClient, QueryClientProvider, useQueryClient } from '@tanstack/react-query';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { injected } from '@wagmi/connectors';
 import { sdk as frameSdk } from '@farcaster/frame-sdk';
 import './App.css';
@@ -222,7 +221,6 @@ function App() {
   const { disconnect } = useDisconnect();
   const [selectedNumbers, setSelectedNumbers] = useState<number[]>([]);
   const [isFrame, setIsFrame] = useState(false);
-  const queryClientInstance = useQueryClient(); // Get query client instance
 
   // Check if running in Farcaster Frame context
    useEffect(() => {
@@ -546,7 +544,6 @@ function App() {
 
   // Calculate current time left for display (updates every second)
     const [displayTimeLeft, setDisplayTimeLeft] = useState("--:--:--");
-    const [activeTimerEndTime, setActiveTimerEndTime] = useState<bigint | undefined>(undefined);
 
     useEffect(() => {
         let targetTime: bigint | undefined;
@@ -557,7 +554,6 @@ function App() {
         } else {
             targetTime = undefined;
         }
-        setActiveTimerEndTime(targetTime);
 
         if (targetTime) {
             const intervalId = setInterval(() => {
@@ -578,6 +574,8 @@ function App() {
         }
     }, [currentGameState, gameEndTime, cooldownEndTime, refetchAllContractData]);
 
+  // Log isFrame to mark as used
+  console.log('Frame Context:', isFrame);
 
   const getStatusText = (): string => {
       switch (currentGameState) {
