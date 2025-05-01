@@ -17,8 +17,18 @@ contract NumberBet is Ownable, ReentrancyGuard {
     // Total USDT pooled in the contract
     uint256 public totalPool;
 
+    // --- Game Timer State ---
+    uint256 public gameEndTime; // Timestamp when the current betting round ends
+    uint256 public cooldownEndTime; // Timestamp when the cooldown period ends (and next game can start)
+    // We can add game state enum later (e.g., Betting, Cooldown, Ended)
+    // uint8 public lastWinningNumber;
+    // uint256 public lastPoolAmount;
+
+    // --- Events ---
     event BetPlaced(address indexed player, uint8[] numbers, uint256 totalAmount);
     event GameDissolved(address indexed owner, uint256 totalAmount);
+    event GameEnded(uint256 endTime, uint256 poolAmount /*, uint8 winningNumber */);
+    event NewGameStarted(uint256 startTime, uint256 endTime);
 
     error InvalidNumber(uint8 number);
     error NumberAlreadyBet(uint8 number);
@@ -111,7 +121,28 @@ contract NumberBet is Ownable, ReentrancyGuard {
         emit GameDissolved(owner(), currentPool);
     }
 
+    // --- Timer Control (Temporary for Testing) ---
+    function _setGameEndTime(uint256 _endTime) external onlyOwner {
+        gameEndTime = _endTime;
+        // In real implementation, this would be set when a game starts/ends
+        // emit NewGameStarted(block.timestamp, _endTime); // Example event emission
+    }
+
+    function _setCooldownEndTime(uint256 _endTime) external onlyOwner {
+        cooldownEndTime = _endTime;
+        // In real implementation, this would be set when a game ends
+        // emit GameEnded(...);
+    }
+
     // --- View Functions ---
+
+    function getGameEndTime() external view returns (uint256) {
+        return gameEndTime;
+    }
+
+     function getCooldownEndTime() external view returns (uint256) {
+        return cooldownEndTime;
+    }
 
     function getBetStatus(uint8 _number) external view returns (address) {
         if (_number == 0 || _number > MAX_NUMBER) {
