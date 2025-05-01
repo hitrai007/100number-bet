@@ -36,7 +36,7 @@ body {
   justify-content: center;
   gap: 2px; /* Min gap for max size */
   /* Removed width: 100%; to let the grid size intrinsically */
-  max-width: 240px; /* Still constrained */
+  /* max-width: 240px; */ /* Removed max-width constraint on grid */
   margin-top: 15px;
   margin-bottom: 15px;
   box-sizing: border-box;
